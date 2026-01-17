@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # -------------------------
 # Load model and vectorizer ONCE
 # -------------------------
@@ -53,7 +56,7 @@ def preprocess(text: str) -> str:
 # -------------------------
 @app.post("/predict")
 def predict(request: TextRequest):
-    text = request.text.lower().strip()
+    text = preprocess(request.text)
 
     X = vectorizer.transform([text])
     prob = float(model.predict_proba(X)[0][1])
