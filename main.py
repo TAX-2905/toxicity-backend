@@ -3,22 +3,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-from dotenv import load_dotenv
-load_dotenv()
-
 # -------------------------
 # Load model and vectorizer ONCE
 # -------------------------
 model = joblib.load("toxicity_model.joblib")
 vectorizer = joblib.load("vectorizer.joblib")
 
-import os
 from supabase import create_client
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_SERVICE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
+SUPABASE_URL = "https://olttxhwixxannritpjvn.supabase.co"
+SUPABASE_SERVICE_KEY = "sb_secret_NIDwIy-1W5ilomXY-coplw_Et9UUqdV"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
 
 # -------------------------
 # FastAPI app
@@ -56,7 +53,7 @@ def preprocess(text: str) -> str:
 # -------------------------
 @app.post("/predict")
 def predict(request: TextRequest):
-    text = preprocess(request.text)
+    text = request.text.lower().strip()
 
     X = vectorizer.transform([text])
     prob = float(model.predict_proba(X)[0][1])
