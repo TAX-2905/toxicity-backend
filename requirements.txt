@@ -4,3 +4,4 @@ pydantic
 joblib
 scikit-learn
 numpy
+python-dotenv
